@@ -10,12 +10,12 @@ HTML_BASE = '/home/rlazur/public_html/coldFeAsic'
 
 def main():
     print("starting...")
-
+    print(os.getcwd())
     prep.confirm_path(HTML_BASE)
-    
+    print("Do we get here?")
     #get the dictionaries from the clean_summary for a first time build
     summary_list, master_run_dict, master_chip_dict, master_board_dict = sbnd.clean_summary()
-
+    print("Or here?")
     env = Environment(loader=FileSystemLoader('j2'))
 
     build_summary_page(summary_list,env)

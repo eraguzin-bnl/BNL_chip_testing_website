@@ -83,7 +83,9 @@ def clean_summary():
     '''
     grab the relevent info from the run directory and put it in a convenient JSON file for later
     '''
+    print("Ok we're here in clean_summary")
     seed_paths = get_seed_paths()
+    print(get_seed_paths())
     summary_list = []
     master_run_dict = {}
     master_chip_dict = {}
