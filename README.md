@@ -1,4 +1,4 @@
-# sbnd_coldfeasic_website
+# BNL_chip_testing_website
 
 ## setup the virtual environment  
 > source venv/bin/activate
