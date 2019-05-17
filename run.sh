@@ -3,7 +3,6 @@
 for fn in j2/*.html; do
     mv $fn $fn".j2"
 done
-
 build
 
 for fn in j2/*.html.j2; do

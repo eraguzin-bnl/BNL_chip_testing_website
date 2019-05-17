@@ -1,7 +1,4 @@
-from shutil import copyfile, copy
-from glob import glob
 import os
-import json
 from datetime import datetime
 
 def prep_rates(chip_dict):
@@ -165,9 +162,4 @@ def good_image(png_name, png_method):
 
 def confirm_path(fp):
     if not os.path.exists(fp):
-        try:
-            os.makedirs(fp)
-        except OSError as exc:
-            if exc.errno != errno.EEXIST:
-                raise
-            
+        os.makedirs(fp)
