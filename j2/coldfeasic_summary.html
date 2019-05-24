@@ -1,7 +1,7 @@
 {% include 'header.html.j2' %}
 
 {% set reltoroot = '..' %}
-
+<link rel="stylesheet" href=".styles.css" >
 <script type="text/javascript" class="init">
   $(document).ready(function() {
   $('#summary').DataTable();
@@ -14,28 +14,65 @@ Listed below is the most basic list of runs, FE ASIC chips, and boards involved.
 
 <h2>Results</h2>
 
-<table id="summary" class="display table" width="100%" cellspacing="0">
+<table id="summary" class="display_table" width="100%" cellspacing="0">
   <thead>
     <tr>
-      <th>Run ID</th>
-      <th>Board ID</th>
-      <th>ASIC 1</th>
-      <th>ASIC 2</th>
-      <th>ASIC 3</th>
-      <th>ASIC 4</th>
+      <th>Chip ID</th>
+      <th>Timestamp</th>
+      <th>Result</th>
+      <th>Warm Sync</th>
+      <th>Warm Alive</th>
+      <th>Cold Sync</th>
+      <th>Cold Baseline</th>
+      <th>Cold Monitor</th>
+      <th>Cold Alive</th>
     </tr>
   </thead>
   
   <tbody>
-    {% for run in summary_list -%}
-    <tr>
-      <td><a href="{{reltoroot}}/runid/{{run.runid}}"> {{run.runid}} </a></td>
-      <td><a href="{{reltoroot}}/boardid/{{run.boardid}}"> {{run.boardid}} </a></td>
-      <td><a href="{{reltoroot}}/asicid/{{run.asic0}}"> {{run.asic0}} </a></td>
-      <td><a href="{{reltoroot}}/asicid/{{run.asic1}}"> {{run.asic1}} </a></td>
-      <td><a href="{{reltoroot}}/asicid/{{run.asic2}}"> {{run.asic2}} </a></td>
-      <td><a href="{{reltoroot}}/asicid/{{run.asic3}}"> {{run.asic3}} </a></td>
-    </tr>
+    {% for chip in final_list -%}
+        {% if chip.LN.run_params and chip.RT.run_params%}
+            <tr>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}"> {{chip.LN.chip_name}} </a></td>
+              <td> {{chip.LN.time}} </td>
+              <td {% if (chip.LN.overall_result == "FAIL") %} 
+                    style="color: red" 
+                  {% elif (chip.LN.overall_result == "PASS") %} 
+                    style="color: green" 
+                  {% endif %}> 
+                {{chip.LN.overall_result}}</td>
+              <td><a href="{{reltoroot}}/{{chip.RT.chip_name}}/{{chip.RT.run_params.session_start_time}}/{{chip.RT.sync_results.sync_plot_location_0}}"> {{chip.RT.sync_results.sync_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.RT.chip_name}}/{{chip.RT.run_params.session_start_time}}/{{chip.RT.alive_results.alive_plot_location_0}}"> {{chip.RT.alive_results.alive_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.sync_results.sync_plot_location_0}}"> {{chip.LN.sync_results.sync_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.baseline_results.baseline_plot_location_0}}"> {{chip.LN.baseline_results.baseline_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.monitor_results.monitor_plot_location_0}}"> {{chip.LN.monitor_results.monitor_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.alive_results.alive_plot_location_0}}"> {{chip.LN.alive_results.alive_result}} </a></td>
+            </tr>
+        {% elif chip.LN.run_params%}
+            <tr>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}"> {{chip.LN.chip_name}} </a></td>
+              <td> {{chip.LN.time}} </td>
+              <td> {{chip.LN.overall_result}}</td>
+              <td>N/A</td>
+              <td>N/A</td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.sync_results.sync_plot_location_0}}"> {{chip.LN.sync_results.sync_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.baseline_results.baseline_plot_location_0}}"> {{chip.LN.baseline_results.baseline_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.monitor_results.monitor_plot_location_0}}"> {{chip.LN.monitor_results.monitor_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.LN.chip_name}}/{{chip.LN.run_params.session_start_time}}/{{chip.LN.alive_results.alive_plot_location_0}}"> {{chip.LN.alive_results.alive_result}} </a></td>
+            </tr>
+        {% elif chip.RT.run_params%}
+            <tr>
+              <td><a href="{{reltoroot}}/{{chip.RT.chip_name}}/{{chip.RT.run_params.session_start_time}}"> {{chip.RT.chip_name}} </a></td>
+              <td> {{chip.RT.time}} </td>
+              <td> {{chip.RT.overall_result}}</td>
+              <td><a href="{{reltoroot}}/{{chip.RT.chip_name}}/{{chip.RT.run_params.session_start_time}}/{{chip.RT.sync_results.sync_plot_location_0}}"> {{chip.RT.sync_results.sync_result}} </a></td>
+              <td><a href="{{reltoroot}}/{{chip.RT.chip_name}}/{{chip.RT.run_params.session_start_time}}/{{chip.RT.alive_results.alive_plot_location_0}}"> {{chip.RT.alive_results.alive_result}} </a></td>
+              <td>N/A</td>
+              <td>N/A</td>
+              <td>N/A</td>
+              <td>N/A</td>
+            </tr>
+        {% endif %}
     {% endfor -%}
   </tbody>
 </table>

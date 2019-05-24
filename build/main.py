@@ -1,5 +1,5 @@
 from helpers.coldFeAsic import crawl
-import os
+import os,sys
 from jinja2 import Environment, FileSystemLoader
 from helpers import prep
 from ini_loader import INI_FILE
@@ -12,13 +12,14 @@ class main():
     
     def start(self):
         print("Main --> starting...")
-        HTML_BASE = self.config["DEFAULT"]["HTML_BASE"]
-        prep.confirm_path(HTML_BASE)
+        self.HTML_BASE = self.config["DEFAULT"]["HTML_BASE"]
+        prep.confirm_path(self.HTML_BASE)
         #get the dictionaries from the clean_summary for a first time build
-        summary_list, master_run_dict, master_chip_dict, master_board_dict = crawl(self.config).clean_summary()
+        master_dict = crawl(self.config).clean_summary()
+        print("Main --> Entire dictionary is {} kB".format(sys.getsizeof(master_dict)/1000))
         env = Environment(loader=FileSystemLoader('j2'))
     
-        build_summary_page(summary_list,env)
+        self.build_summary_page(master_dict,env)
         
         generic_page_builder(master_run_dict, env, 'runid')
     
@@ -27,6 +28,8 @@ class main():
         generic_page_builder(master_board_dict, env, 'boardid')   
     
         build_rates_page(master_chip_dict, env)
+        
+        #TODO count socket uses
         
         print("...finished")
     
@@ -57,17 +60,26 @@ class main():
                 html_file.write(text)
     
     
-    def build_summary_page(summary_list, env):
+    def build_summary_page(self, master_dict, env):
         #build the summary html file (coldFeAsic/summary/index.html)
         #the summary list is a list of dictionaries
         #each dictionary contains boardid, chip names, run id
         #jinja prefers a dictionary not a list
-        summary_dict = {'summary_list':summary_list}
+    
+#        summary_dict = {'summary_list':summary_list}
         template_obj = env.get_template('coldfeasic_summary.html.j2')
-        summary_dir = os.path.join(HTML_BASE,'summary') 
+        summary_dir = os.path.join(self.HTML_BASE,'summary') 
         prep.confirm_path(summary_dir)
+        print(master_dict['final_list'][0]["LN"].keys())
+        print(master_dict['final_list'][0]["LN"]['sync_results'].keys())
+        print(master_dict['final_list'][0]["LN"]['run_params'].keys())
+        print(master_dict['final_list'][0]["LN"]['chip_results'].keys())
+        print(master_dict['final_list'][0]["LN"]['final'])
+        print(master_dict['final_list'][0]["LN"]['alive_results'].keys())
+        print(master_dict['final_list'][0]["LN"]['baseline_results'].keys())
+        print(master_dict['final_list'][0]["LN"]['monitor_results'].keys())
         with open(summary_dir+'/index.html', 'w') as html_file:
-            text = template_obj.render(summary_dict)
+            text = template_obj.render(master_dict)
             html_file.write(text)
     
     def build_rates_page(summary_dict, env):
